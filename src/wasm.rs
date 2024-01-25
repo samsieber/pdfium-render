@@ -195,12 +195,17 @@ impl PdfiumRenderWasmState {
         } else {
             // The wasmTable global variable is not defined. Try the
             // asm.__indirect_function_table property in the Pdfium WASM module instead.
-
-            log::debug!("pdfium_render::PdfiumRenderWasmState::bind_to_pdfium(): global wasmTable variable not defined, falling back to Module.asm.__indirect_function_table");
-
-            self.get_value_from_pdfium_wasm_module("asm")
-                .and_then(|asm| self.get_value_from_browser_object(&asm, "__indirect_function_table"))
-                .map_err(|_| "Unable to locate wasmTable")?
+            log::debug!("pdfium_render::PdfiumRenderWasmState::bind_to_pdfium(): global wasmTable variable not defined, falling back to Module['wasmExports'].__indirect_function_table");
+            self.get_value_from_pdfium_wasm_module("wasmExports")
+                .and_then(|wasm_exports| self.get_value_from_browser_object(&wasm_exports, "__indirect_function_table"))
+                .map_err(|_| "Module['wasmExports'] not defined")
+                .or_else(|_| {
+                    log::debug!("pdfium_render::PdfiumRenderWasmState::bind_to_pdfium(): global wasmTable variable not defined, falling back to Module.asm.__indirect_function_table");
+                    
+                    self.get_value_from_pdfium_wasm_module("asm")
+                        .and_then(|asm| self.get_value_from_browser_object(&asm, "__indirect_function_table"))
+                        .map_err(|_| "Unable to locate wasmTable")
+                })?
         }.into();
 
         // Once we have the function table, we scan it for function signatures that take 4 arguments.
