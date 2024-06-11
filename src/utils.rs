@@ -70,7 +70,7 @@ pub(crate) mod pixels {
                 scanline[..width * BYTES_PER_THREE_CHANNEL_PIXEL]
                     .chunks_exact(BYTES_PER_THREE_CHANNEL_PIXEL)
             })
-            .flat_map(|channels| [channels[2], channels[1], channels[0], 255])
+            .flat_map(|channels| [channels[2], channels[1], channels[0]])
             .collect::<Vec<_>>()
     }
 
