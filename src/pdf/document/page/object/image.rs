@@ -514,6 +514,7 @@ impl<'a> PdfPageImageObject<'a> {
 
         let width_bytes = width * channels;
 
+        log::info!("Found image with w: {}, h: {}, s: {}, bl: {}, c: {}, wb: {}", width, height, stride, buffer_length, channels, width_bytes);
 
         match format {
             #[allow(deprecated)]
@@ -574,8 +575,8 @@ impl<'a> PdfPageImageObject<'a> {
                 };
                 // let gray_vec = buffer.to_vec();
                 // panic!("Going from a gray image??? {} {}", stride, channels);
-                RgbImage::from_raw(width as u32, height as u32, gray_vec)
-                    .map(DynamicImage::ImageRgb8)
+                GrayImage::from_raw(width as u32, height as u32, gray_vec)
+                    .map(DynamicImage::ImageLuma8)
             }
         }
         .ok_or(PdfiumError::ImageError)
