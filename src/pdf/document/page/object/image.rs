@@ -483,6 +483,8 @@ impl<'a> PdfPageImageObject<'a> {
         &self,
         bitmap: &PdfBitmap,
     ) -> Result<DynamicImage, PdfiumError> {
+        use image::RgbImage;
+
         let handle = *bitmap.handle();
 
         let width = self.bindings.FPDFBitmap_GetWidth(handle);
@@ -502,21 +504,78 @@ impl<'a> PdfPageImageObject<'a> {
             std::slice::from_raw_parts(buffer_start as *const u8, buffer_length as usize)
         };
 
+        // If the stride is longer because of byte boundaries, like rows needing to be a multiple of 4 bytes, account for the extra black pixels
+        let channels = match format {
+            #[allow(deprecated)]
+            PdfBitmapFormat::BGRA | PdfBitmapFormat::BRGx | PdfBitmapFormat::BGRx => 4,
+            PdfBitmapFormat::BGR => 3,
+            PdfBitmapFormat::Gray => 1,
+        };
+
+        let width_bytes = width * channels;
+
+
         match format {
             #[allow(deprecated)]
             PdfBitmapFormat::BGRA | PdfBitmapFormat::BRGx | PdfBitmapFormat::BGRx => {
                 RgbaImage::from_raw(width as u32, height as u32, bgra_to_rgba(buffer))
                     .map(DynamicImage::ImageRgba8)
             }
-            PdfBitmapFormat::BGR => RgbaImage::from_raw(
-                width as u32,
-                height as u32,
-                aligned_bgr_to_rgba(buffer, width as usize, stride as usize),
-            )
-            .map(DynamicImage::ImageRgba8),
+            PdfBitmapFormat::BGR => {
+                let channels = 3;
+                let width_bytes = channels * width;
+
+                let grayscale = buffer.chunks_exact(stride as usize).any(|c| c.chunks_exact(3).any(|c| c[0] == c[1] && c[1] == c[2]));
+                if grayscale {
+                    let image_buffer = if stride != width_bytes {
+                        let mut new_buffer = Vec::new();
+                        
+                        new_buffer.reserve_exact((channels * width * height) as usize);
+            
+                        for row in buffer.chunks_exact(stride as usize) {
+                            new_buffer.extend_from_slice(&row[0..width_bytes as usize])
+                        }
+            
+                        new_buffer
+                    } else {
+                        buffer.to_vec()
+                    };
+                    RgbImage::from_raw(
+                        width as u32,
+                        height as u32,
+                        image_buffer,
+                    )
+                    .map(DynamicImage::ImageRgb8)
+                } else {                
+                    let image_buffer = aligned_bgr_to_rgba(buffer, width as usize, stride as usize);
+                    RgbaImage::from_raw(
+                        width as u32,
+                        height as u32,
+                        image_buffer,
+                    )
+                    .map(DynamicImage::ImageRgba8)
+                }
+            },
             PdfBitmapFormat::Gray => {
-                GrayImage::from_raw(width as u32, height as u32, buffer.to_vec())
-                    .map(DynamicImage::ImageLuma8)
+                let channels = 1;
+                let width_bytes = channels * width;
+                let gray_vec = if stride != width_bytes {
+                    let mut new_buffer = Vec::new();
+                    
+                    new_buffer.reserve_exact((channels * width * height) as usize);
+        
+                    for row in buffer.chunks_exact(stride as usize) {
+                        new_buffer.extend_from_slice(&row[0..width_bytes as usize])
+                    }
+        
+                    new_buffer
+                } else {
+                    buffer.to_vec()
+                };
+                // let gray_vec = buffer.to_vec();
+                // panic!("Going from a gray image??? {} {}", stride, channels);
+                RgbImage::from_raw(width as u32, height as u32, gray_vec)
+                    .map(DynamicImage::ImageRgb8)
             }
         }
         .ok_or(PdfiumError::ImageError)
