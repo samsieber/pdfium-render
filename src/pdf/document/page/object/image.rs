@@ -525,7 +525,20 @@ impl<'a> PdfPageImageObject<'a> {
             )
             .map(DynamicImage::ImageRgba8),
             PdfBitmapFormat::Gray => {
-                GrayImage::from_raw(width as u32, height as u32, Vec::from(buffer))
+                let channels = 1;
+                let width_bytes = channels * width;
+                let gray_vec = if stride != width_bytes {
+                    let mut new_buffer = Vec::with_capacity((channels * width * height) as usize);
+
+                    for row in buffer.chunks_exact(stride as usize) {
+                        new_buffer.extend_from_slice(&row[0..width_bytes as usize])
+                    }
+
+                    new_buffer
+                } else {
+                    Vec::from(buffer)
+                };
+                GrayImage::from_raw(width as u32, height as u32, gray_vec)
                     .map(DynamicImage::ImageLuma8)
             }
         }
