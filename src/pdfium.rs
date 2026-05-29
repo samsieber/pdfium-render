@@ -450,7 +450,11 @@ impl Default for Pdfium {
     /// will panic if no statically linked Pdfium functions can be located.
     #[inline]
     fn default() -> Self {
-        Pdfium::new(Pdfium::bind_to_statically_linked_library().unwrap())
+        match Pdfium::bind_to_statically_linked_library() {
+            Ok(bindings) => Pdfium::new(bindings),
+            Err(PdfiumError::PdfiumLibraryBindingsAlreadyInitialized) => Pdfium { config: None },
+            Err(err) => Err(err).unwrap(),
+        }
     }
 
     #[cfg(not(feature = "static"))]
