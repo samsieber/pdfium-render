@@ -16,7 +16,7 @@ exclude = ["test/*.pdf"]
 
 [lib]
 name = "pdfium_render"
-crate-type = ["lib", "staticlib", "cdylib"]
+crate-type = ["lib"]
 doctest = false
 
 [dependencies]
