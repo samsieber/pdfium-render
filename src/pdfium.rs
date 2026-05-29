@@ -17,7 +17,7 @@ use {
     std::ffi::OsString, std::path::PathBuf,
 };
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "static"))]
+#[cfg(feature = "static")]
 use crate::bindings::static_bindings::StaticPdfiumBindings;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -28,9 +28,11 @@ use {
     std::path::Path,
 };
 
+#[cfg(all(target_arch = "wasm32", not(feature = "static")))]
+use crate::bindings::wasm_bindings::{PdfiumRenderWasmState, WasmPdfiumBindings};
+
 #[cfg(target_arch = "wasm32")]
 use {
-    crate::bindings::wasm_bindings::{PdfiumRenderWasmState, WasmPdfiumBindings},
     js_sys::{ArrayBuffer, Uint8Array},
     wasm_bindgen::JsCast,
     wasm_bindgen_futures::JsFuture,
@@ -72,7 +74,6 @@ pub struct Pdfium {
 }
 
 impl Pdfium {
-    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(any(doc, feature = "static"))]
     /// Binds to a Pdfium library that was statically linked into the currently running
     /// executable, returning a new [PdfiumLibraryBindings] object that contains bindings to the
@@ -111,7 +112,7 @@ impl Pdfium {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// Initializes the external Pdfium library, binding to an external WASM module.
     /// Returns a new [PdfiumLibraryBindings] object that contains bindings to the functions exposed
     /// by the library, or an error if the library is not available.
@@ -482,7 +483,7 @@ impl Default for Pdfium {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// Binds to an external Pdfium library by attempting to a system-provided library.
     ///
     /// This function will panic if no suitable Pdfium library can be loaded.

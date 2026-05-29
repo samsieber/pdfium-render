@@ -22,10 +22,10 @@
 #[cfg(not(feature = "static"))]
 pub(crate) mod dynamic_bindings;
 
-#[cfg(not(target_arch = "wasm32"))]
 #[cfg(feature = "static")]
 pub(crate) mod static_bindings;
 
+#[cfg(not(feature = "static"))]
 #[cfg(target_arch = "wasm32")]
 pub(crate) mod wasm_bindings;
 
@@ -319,7 +319,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
     #[allow(non_snake_case)]
     unsafe fn FPDF_SetSandBoxPolicy(&self, policy: FPDF_DWORD, enable: FPDF_BOOL);
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     #[cfg(feature = "pdfium_use_win32")]
     /// Sets printing mode when printing on Windows.
     ///
@@ -399,7 +399,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
     #[allow(non_snake_case)]
     unsafe fn FPDF_CreateNewDocument(&self) -> FPDF_DOCUMENT;
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     /// Opens and loads an existing PDF document.
     ///
     ///    `file_path` -  Path to the PDF file (including extension).
@@ -3096,7 +3096,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
         color: FPDF_DWORD,
     ) -> FPDF_BOOL;
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     /// Note that this function is not available when compiling to WASM as it cannot be made
     /// memory safe. When compiling to WASM, Pdfium's internal pixel data buffer for a bitmap
     /// resides in a separate WASM memory module from your Rust application, so any buffer
@@ -3128,7 +3128,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
     #[allow(non_snake_case)]
     unsafe fn FPDFBitmap_GetBuffer(&self, bitmap: FPDF_BITMAP) -> *mut c_void;
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     /// This function is not part of the Pdfium API. It is provided by `pdfium-render` as an
     /// alternative to directly mutating the data returned by
     /// [PdfiumLibraryBindings::FPDFBitmap_GetBuffer].
@@ -3156,7 +3156,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
         true
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// This function is not part of the Pdfium API. It is provided by `pdfium-render` as an
     /// alternative to directly mutating the data returned by
     /// [PdfiumLibraryBindings::FPDFBitmap_GetBuffer].
@@ -3168,7 +3168,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
     #[allow(non_snake_case)]
     unsafe fn FPDFBitmap_SetBuffer(&self, bitmap: FPDF_BITMAP, buffer: &[u8]) -> bool;
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     /// Gets the data buffer of a bitmap as a Rust slice.
     ///
     ///   `bitmap`      -   Handle to the bitmap. Returned by [PdfiumLibraryBindings::FPDFBitmap_Create]
@@ -3188,7 +3188,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
         unsafe { std::slice::from_raw_parts(buffer as *const u8, len as usize) }
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     /// This function is not part of the Pdfium API. It is provided by `pdfium-render` as a
     /// cross-platform neutral way of retrieving the pixel data owned by a bitmap. It is
     /// an alternative to Pdfium's [PdfiumLibraryBindings::FPDFBitmap_GetBuffer] function,
@@ -3220,7 +3220,7 @@ pub trait PdfiumLibraryBindings: Send + Sync + Drop {
         Vec::from(self.FPDFBitmap_GetBuffer_as_slice(bitmap))
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// Gets the data buffer of a bitmap.
     ///
     ///   `bitmap`      -   Handle to the bitmap. Returned by [PdfiumLibraryBindings::FPDFBitmap_Create]
