@@ -1746,6 +1746,13 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         crate::bindgen::FPDFBitmap_GetBuffer(bitmap)
     }
 
+    #[cfg(target_arch = "wasm32")]
+    #[inline]
+    #[allow(non_snake_case)]
+    unsafe fn FPDFBitmap_GetBuffer_as_array(&self, bitmap: FPDF_BITMAP) -> js_sys::Uint8Array {
+        js_sys::Uint8Array::view(self.FPDFBitmap_GetBuffer_as_slice(bitmap))
+    }
+
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFBitmap_GetWidth(&self, bitmap: FPDF_BITMAP) -> c_int {

@@ -19,7 +19,7 @@ use {
     std::ffi::OsString, std::path::PathBuf,
 };
 
-#[cfg(all(not(target_arch = "wasm32"), feature = "static"))]
+#[cfg(feature = "static")]
 use crate::bindings::static_bindings::StaticPdfiumBindings;
 
 #[cfg(not(target_arch = "wasm32"))]
@@ -28,9 +28,11 @@ use {crate::bindgen::FPDF_SYSFONTINFO, std::fs::File, std::path::Path};
 use crate::utils::files::get_pdfium_file_accessor_from_reader;
 use std::io::{Read, Seek};
 
+#[cfg(all(target_arch = "wasm32", not(feature = "static")))]
+use crate::bindings::wasm_bindings::{PdfiumRenderWasmState, WasmPdfiumBindings};
+
 #[cfg(target_arch = "wasm32")]
 use {
-    crate::bindings::wasm_bindings::{PdfiumRenderWasmState, WasmPdfiumBindings},
     js_sys::{ArrayBuffer, Uint8Array},
     wasm_bindgen::JsCast,
     wasm_bindgen_futures::JsFuture,
@@ -97,7 +99,6 @@ pub struct Pdfium {
 }
 
 impl Pdfium {
-    #[cfg(not(target_arch = "wasm32"))]
     #[cfg(any(doc, feature = "static"))]
     /// Binds to a Pdfium library that was statically linked into the currently running
     /// executable, returning a new [PdfiumLibraryBindings] object that contains bindings to the
@@ -142,7 +143,7 @@ impl Pdfium {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// Initializes the external Pdfium library, binding to an external WASM module.
     /// Returns a new [PdfiumLibraryBindings] object that contains bindings to the functions exposed
     /// by the library, or an error if the library is not available.
@@ -546,11 +547,19 @@ impl Pdfium {
 impl Default for Pdfium {
     #[cfg(feature = "static")]
     /// Binds to a Pdfium library that was statically linked into the currently running
-    /// executable by calling [Pdfium::bind_to_statically_linked_library]. This function
-    /// will panic if no statically linked Pdfium functions can be located.
+    /// executable by calling [Pdfium::bind_to_statically_linked_library].
+    /// Reuses the existing bindings after the first initialization.
     #[inline]
     fn default() -> Self {
-        Pdfium::new(Pdfium::bind_to_statically_linked_library().expect("No Pdfium library found"))
+        match Pdfium::bind_to_statically_linked_library() {
+            Ok(bindings) => Pdfium::new(bindings),
+            Err(PdfiumError::PdfiumLibraryBindingsAlreadyInitialized) => Pdfium {
+                custom_font_provider: None,
+                #[cfg(not(target_arch = "wasm32"))]
+                platform_default_font_provider: None,
+            },
+            Err(err) => panic!("Could not initialize statically linked Pdfium: {}", err),
+        }
     }
 
     #[cfg(not(feature = "static"))]
@@ -588,7 +597,7 @@ impl Default for Pdfium {
         }
     }
 
-    #[cfg(target_arch = "wasm32")]
+    #[cfg(all(target_arch = "wasm32", not(feature = "static")))]
     /// Binds to an external Pdfium library by attempting to a system-provided library.
     ///
     /// This function will panic if no suitable Pdfium library can be loaded.
