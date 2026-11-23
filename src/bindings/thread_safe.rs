@@ -167,7 +167,7 @@ impl<T: PdfiumLibraryBindings> PdfiumLibraryBindings for ThreadSafePdfiumBinding
         self.bindings.FPDF_CreateNewDocument()
     }
 
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDF_LoadDocument(&self, file_path: &str, password: Option<&str>) -> FPDF_DOCUMENT {
@@ -1935,7 +1935,7 @@ impl<T: PdfiumLibraryBindings> PdfiumLibraryBindings for ThreadSafePdfiumBinding
 
     #[inline]
     #[allow(non_snake_case)]
-    #[cfg(not(target_arch = "wasm32"))]
+    #[cfg(any(not(target_arch = "wasm32"), feature = "static"))]
     unsafe fn FPDFBitmap_GetBuffer(&self, bitmap: FPDF_BITMAP) -> *mut c_void {
         let _lock = PdfiumThreadMarshall::lock();
         self.bindings.FPDFBitmap_GetBuffer(bitmap)
