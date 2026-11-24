@@ -137,10 +137,12 @@ The `static` crate feature offers an alternative to dynamic linking if you prefe
 Static consumers can opt into `render_only` to reduce binary size. This
 disables PDF saves, page imports and moves, page flattening and geometry
 edits, annotation mutations, attachment and catalog language writes, image
-and path object editing, and interactive form editing. Disabled operations
-return their normal failure values, or do nothing for void PDFium calls.
-Rendering, existing annotation and form appearances, and temporary pages
-and text objects remain available.
+and path object editing, interactive form editing, and page-content
+regeneration. Disabled operations return their normal failure values, or
+do nothing for void PDFium calls. Rendering and existing annotation and
+form appearances remain available. For temporary text pages, set the
+page's content regeneration strategy to `Manual` before adding text
+objects and render the open page directly.
 
 As a convenience, `pdfium-render` can instruct `cargo` to link to either a dynamically-built or a statically-built Pdfium library for you. To link to a dynamically-built library, set the `PDFIUM_DYNAMIC_LIB_PATH` environment variable when you run `cargo build`, like so:
 

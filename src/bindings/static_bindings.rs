@@ -1691,7 +1691,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPage_GenerateContent(&self, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FPDFPage_GenerateContent(page)
+        pdfium_edit!(0, page, { crate::bindgen::FPDFPage_GenerateContent(page) })
     }
 
     #[allow(non_snake_case)]
