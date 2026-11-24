@@ -524,19 +524,23 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         src_doc: FPDF_DOCUMENT,
         src_page_index: c_int,
     ) -> FPDF_XOBJECT {
-        crate::bindgen::FPDF_NewXObjectFromPage(dest_doc, src_doc, src_page_index)
+        pdfium_edit!(std::ptr::null_mut(), (dest_doc, src_doc, src_page_index), {
+            crate::bindgen::FPDF_NewXObjectFromPage(dest_doc, src_doc, src_page_index)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDF_CloseXObject(&self, xobject: FPDF_XOBJECT) {
-        crate::bindgen::FPDF_CloseXObject(xobject)
+        pdfium_edit!((), xobject, { crate::bindgen::FPDF_CloseXObject(xobject) })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDF_NewFormObjectFromXObject(&self, xobject: FPDF_XOBJECT) -> FPDF_PAGEOBJECT {
-        crate::bindgen::FPDF_NewFormObjectFromXObject(xobject)
+        pdfium_edit!(std::ptr::null_mut(), xobject, {
+            crate::bindgen::FPDF_NewFormObjectFromXObject(xobject)
+        })
     }
 
     #[inline]
@@ -546,7 +550,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         dest_doc: FPDF_DOCUMENT,
         src_doc: FPDF_DOCUMENT,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDF_CopyViewerPreferences(dest_doc, src_doc)
+        pdfium_edit!(0, (dest_doc, src_doc), {
+            crate::bindgen::FPDF_CopyViewerPreferences(dest_doc, src_doc)
+        })
     }
 
     #[inline]
@@ -1346,7 +1352,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPage_Delete(&self, document: FPDF_DOCUMENT, page_index: c_int) {
-        crate::bindgen::FPDFPage_Delete(document, page_index)
+        pdfium_edit!((), (document, page_index), {
+            crate::bindgen::FPDFPage_Delete(document, page_index)
+        })
     }
 
     #[cfg(any(
@@ -1407,7 +1415,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPage_SetRotation(&self, page: FPDF_PAGE, rotate: c_int) {
-        crate::bindgen::FPDFPage_SetRotation(page, rotate)
+        pdfium_edit!((), (page, rotate), {
+            crate::bindgen::FPDFPage_SetRotation(page, rotate)
+        })
     }
 
     #[inline]
@@ -1514,7 +1524,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) {
-        crate::bindgen::FPDFPage_SetMediaBox(page, left, bottom, right, top)
+        pdfium_edit!((), (page, left, bottom, right, top), {
+            crate::bindgen::FPDFPage_SetMediaBox(page, left, bottom, right, top)
+        })
     }
 
     #[inline]
@@ -1527,7 +1539,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) {
-        crate::bindgen::FPDFPage_SetCropBox(page, left, bottom, right, top)
+        pdfium_edit!((), (page, left, bottom, right, top), {
+            crate::bindgen::FPDFPage_SetCropBox(page, left, bottom, right, top)
+        })
     }
 
     #[inline]
@@ -1540,7 +1554,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) {
-        crate::bindgen::FPDFPage_SetBleedBox(page, left, bottom, right, top)
+        pdfium_edit!((), (page, left, bottom, right, top), {
+            crate::bindgen::FPDFPage_SetBleedBox(page, left, bottom, right, top)
+        })
     }
 
     #[inline]
@@ -1553,7 +1569,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) {
-        crate::bindgen::FPDFPage_SetTrimBox(page, left, bottom, right, top)
+        pdfium_edit!((), (page, left, bottom, right, top), {
+            crate::bindgen::FPDFPage_SetTrimBox(page, left, bottom, right, top)
+        })
     }
 
     #[inline]
@@ -1566,7 +1584,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) {
-        crate::bindgen::FPDFPage_SetArtBox(page, left, bottom, right, top)
+        pdfium_edit!((), (page, left, bottom, right, top), {
+            crate::bindgen::FPDFPage_SetArtBox(page, left, bottom, right, top)
+        })
     }
 
     #[inline]
@@ -1577,7 +1597,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         matrix: *const FS_MATRIX,
         clipRect: *const FS_RECTF,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPage_TransFormWithClip(page, matrix, clipRect)
+        pdfium_edit!(0, (page, matrix, clipRect), {
+            crate::bindgen::FPDFPage_TransFormWithClip(page, matrix, clipRect)
+        })
     }
 
     #[inline]
@@ -1592,7 +1614,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         e: f64,
         f: f64,
     ) {
-        crate::bindgen::FPDFPageObj_TransformClipPath(page_object, a, b, c, d, e, f)
+        pdfium_edit!((), (page_object, a, b, c, d, e, f), {
+            crate::bindgen::FPDFPageObj_TransformClipPath(page_object, a, b, c, d, e, f)
+        })
     }
 
     #[inline]
@@ -1637,19 +1661,25 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         right: c_float,
         top: c_float,
     ) -> FPDF_CLIPPATH {
-        crate::bindgen::FPDF_CreateClipPath(left, bottom, right, top)
+        pdfium_edit!(std::ptr::null_mut(), (left, bottom, right, top), {
+            crate::bindgen::FPDF_CreateClipPath(left, bottom, right, top)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDF_DestroyClipPath(&self, clipPath: FPDF_CLIPPATH) {
-        crate::bindgen::FPDF_DestroyClipPath(clipPath)
+        pdfium_edit!((), clipPath, {
+            crate::bindgen::FPDF_DestroyClipPath(clipPath)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPage_InsertClipPath(&self, page: FPDF_PAGE, clipPath: FPDF_CLIPPATH) {
-        crate::bindgen::FPDFPage_InsertClipPath(page, clipPath)
+        pdfium_edit!((), (page, clipPath), {
+            crate::bindgen::FPDFPage_InsertClipPath(page, clipPath)
+        })
     }
 
     #[inline]
@@ -1675,7 +1705,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         e: f64,
         f: f64,
     ) {
-        crate::bindgen::FPDFPage_TransformAnnots(page, a, b, c, d, e, f)
+        pdfium_edit!((), (page, a, b, c, d, e, f), {
+            crate::bindgen::FPDFPage_TransformAnnots(page, a, b, c, d, e, f)
+        })
     }
 
     #[inline]
@@ -2481,7 +2513,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         subtypes: *const FPDF_ANNOTATION_SUBTYPE,
         count: size_t,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFAnnot_SetFocusableSubtypes(form, subtypes, count)
+        pdfium_edit!(0, (form, subtypes, count), {
+            crate::bindgen::FPDFAnnot_SetFocusableSubtypes(form, subtypes, count)
+        })
     }
 
     #[inline]
@@ -2642,7 +2676,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPage_Flatten(&self, page: FPDF_PAGE, nFlag: c_int) -> c_int {
-        crate::bindgen::FPDFPage_Flatten(page, nFlag)
+        pdfium_edit!(crate::bindgen::FLATTEN_FAIL as c_int, (page, nFlag), {
+            crate::bindgen::FPDFPage_Flatten(page, nFlag)
+        })
     }
 
     #[inline]
@@ -2679,7 +2715,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnMouseMove(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnMouseMove(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2693,7 +2731,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         delta_x: c_int,
         delta_y: c_int,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnMouseWheel(form, page, modifier, page_coord, delta_x, delta_y)
+        pdfium_edit!(0, (form, page, modifier, page_coord, delta_x, delta_y), {
+            crate::bindgen::FORM_OnMouseWheel(form, page, modifier, page_coord, delta_x, delta_y)
+        })
     }
 
     #[inline]
@@ -2706,7 +2746,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnFocus(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnFocus(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2719,7 +2761,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnLButtonDown(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnLButtonDown(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2732,7 +2776,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnRButtonDown(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnRButtonDown(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2745,7 +2791,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnLButtonUp(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnLButtonUp(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2758,7 +2806,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnRButtonUp(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnRButtonUp(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2771,7 +2821,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_x: f64,
         page_y: f64,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnLButtonDoubleClick(form, page, modifier, page_x, page_y)
+        pdfium_edit!(0, (form, page, modifier, page_x, page_y), {
+            crate::bindgen::FORM_OnLButtonDoubleClick(form, page, modifier, page_x, page_y)
+        })
     }
 
     #[inline]
@@ -2783,7 +2835,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         nKeyCode: c_int,
         modifier: c_int,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnKeyDown(form, page, nKeyCode, modifier)
+        pdfium_edit!(0, (form, page, nKeyCode, modifier), {
+            crate::bindgen::FORM_OnKeyDown(form, page, nKeyCode, modifier)
+        })
     }
 
     #[inline]
@@ -2795,7 +2849,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         nKeyCode: c_int,
         modifier: c_int,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnKeyUp(form, page, nKeyCode, modifier)
+        pdfium_edit!(0, (form, page, nKeyCode, modifier), {
+            crate::bindgen::FORM_OnKeyUp(form, page, nKeyCode, modifier)
+        })
     }
 
     #[inline]
@@ -2807,7 +2863,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         nChar: c_int,
         modifier: c_int,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_OnChar(form, page, nChar, modifier)
+        pdfium_edit!(0, (form, page, nChar, modifier), {
+            crate::bindgen::FORM_OnChar(form, page, nChar, modifier)
+        })
     }
 
     #[inline]
@@ -2842,7 +2900,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page: FPDF_PAGE,
         wsText: FPDF_WIDESTRING,
     ) {
-        crate::bindgen::FORM_ReplaceAndKeepSelection(form, page, wsText)
+        pdfium_edit!((), (form, page, wsText), {
+            crate::bindgen::FORM_ReplaceAndKeepSelection(form, page, wsText)
+        })
     }
 
     #[inline]
@@ -2853,37 +2913,45 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page: FPDF_PAGE,
         wsText: FPDF_WIDESTRING,
     ) {
-        crate::bindgen::FORM_ReplaceSelection(form, page, wsText)
+        pdfium_edit!((), (form, page, wsText), {
+            crate::bindgen::FORM_ReplaceSelection(form, page, wsText)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FORM_SelectAllText(&self, form: FPDF_FORMHANDLE, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FORM_SelectAllText(form, page)
+        pdfium_edit!(0, (form, page), {
+            crate::bindgen::FORM_SelectAllText(form, page)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FORM_CanUndo(&self, form: FPDF_FORMHANDLE, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FORM_CanUndo(form, page)
+        pdfium_edit!(0, (form, page), {
+            crate::bindgen::FORM_CanUndo(form, page)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FORM_CanRedo(&self, form: FPDF_FORMHANDLE, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FORM_CanRedo(form, page)
+        pdfium_edit!(0, (form, page), {
+            crate::bindgen::FORM_CanRedo(form, page)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FORM_Undo(&self, form: FPDF_FORMHANDLE, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FORM_Undo(form, page)
+        pdfium_edit!(0, (form, page), { crate::bindgen::FORM_Undo(form, page) })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FORM_Redo(&self, form: FPDF_FORMHANDLE, page: FPDF_PAGE) -> FPDF_BOOL {
-        crate::bindgen::FORM_Redo(form, page)
+        pdfium_edit!(0, (form, page), { crate::bindgen::FORM_Redo(form, page) })
     }
 
     #[inline]
@@ -2910,7 +2978,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         form: FPDF_FORMHANDLE,
         annot: FPDF_ANNOTATION,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_SetFocusedAnnot(form, annot)
+        pdfium_edit!(0, (form, annot), {
+            crate::bindgen::FORM_SetFocusedAnnot(form, annot)
+        })
     }
 
     #[inline]
@@ -3014,7 +3084,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         index: c_int,
         selected: FPDF_BOOL,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_SetIndexSelected(form, page, index, selected)
+        pdfium_edit!(0, (form, page, index, selected), {
+            crate::bindgen::FORM_SetIndexSelected(form, page, index, selected)
+        })
     }
 
     #[inline]
@@ -3048,7 +3120,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         annot: FPDF_ANNOTATION,
         direction: FPDF_TEXT_DIRECTION,
     ) -> FPDF_BOOL {
-        crate::bindgen::FORM_SetTextDirection(handle, annot, direction)
+        pdfium_edit!(0, (handle, annot, direction), {
+            crate::bindgen::FORM_SetTextDirection(handle, annot, direction)
+        })
     }
 
     #[inline]
@@ -3971,7 +4045,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         form_object: FPDF_PAGEOBJECT,
         page_object: FPDF_PAGEOBJECT,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFFormObj_RemoveObject(form_object, page_object)
+        pdfium_edit!(0, (form_object, page_object), {
+            crate::bindgen::FPDFFormObj_RemoveObject(form_object, page_object)
+        })
     }
 
     #[inline]
@@ -4061,13 +4137,17 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPath_MoveTo(&self, path: FPDF_PAGEOBJECT, x: c_float, y: c_float) -> FPDF_BOOL {
-        crate::bindgen::FPDFPath_MoveTo(path, x, y)
+        pdfium_edit!(0, (path, x, y), {
+            crate::bindgen::FPDFPath_MoveTo(path, x, y)
+        })
     }
 
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPath_LineTo(&self, path: FPDF_PAGEOBJECT, x: c_float, y: c_float) -> FPDF_BOOL {
-        crate::bindgen::FPDFPath_LineTo(path, x, y)
+        pdfium_edit!(0, (path, x, y), {
+            crate::bindgen::FPDFPath_LineTo(path, x, y)
+        })
     }
 
     #[inline]
@@ -4082,7 +4162,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         x3: c_float,
         y3: c_float,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPath_BezierTo(path, x1, y1, x2, y2, x3, y3)
+        pdfium_edit!(0, (path, x1, y1, x2, y2, x3, y3), {
+            crate::bindgen::FPDFPath_BezierTo(path, x1, y1, x2, y2, x3, y3)
+        })
     }
 
     #[cfg(any(feature = "pdfium_future", feature = "pdfium_8125"))]
@@ -4106,7 +4188,7 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPath_Close(&self, path: FPDF_PAGEOBJECT) -> FPDF_BOOL {
-        crate::bindgen::FPDFPath_Close(path)
+        pdfium_edit!(0, path, { crate::bindgen::FPDFPath_Close(path) })
     }
 
     #[inline]
@@ -4117,7 +4199,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         fillmode: c_int,
         stroke: FPDF_BOOL,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPath_SetDrawMode(path, fillmode, stroke)
+        pdfium_edit!(0, (path, fillmode, stroke), {
+            crate::bindgen::FPDFPath_SetDrawMode(path, fillmode, stroke)
+        })
     }
 
     #[inline]
@@ -4317,7 +4401,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page: FPDF_PAGE,
         page_obj: FPDF_PAGEOBJECT,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPage_RemoveObject(page, page_obj)
+        pdfium_edit!(0, (page, page_obj), {
+            crate::bindgen::FPDFPage_RemoveObject(page, page_obj)
+        })
     }
 
     #[inline]
@@ -4454,7 +4540,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPageObj_NewImageObj(&self, document: FPDF_DOCUMENT) -> FPDF_PAGEOBJECT {
-        crate::bindgen::FPDFPageObj_NewImageObj(document)
+        pdfium_edit!(std::ptr::null_mut(), document, {
+            crate::bindgen::FPDFPageObj_NewImageObj(document)
+        })
     }
 
     #[cfg(any(
@@ -4500,9 +4588,11 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_object: FPDF_PAGEOBJECT,
         name: &str,
     ) -> FPDF_PAGEOBJECTMARK {
-        let c_name = CString::new(name).unwrap();
+        pdfium_edit!(std::ptr::null_mut(), (page_object, name), {
+            let c_name = CString::new(name).unwrap();
 
-        crate::bindgen::FPDFPageObj_AddMark(page_object, c_name.as_ptr())
+            crate::bindgen::FPDFPageObj_AddMark(page_object, c_name.as_ptr())
+        })
     }
 
     #[cfg(any(
@@ -4517,7 +4607,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_object: FPDF_PAGEOBJECT,
         mark: FPDF_PAGEOBJECTMARK,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPageObj_AddExistingMark(page_object, mark)
+        pdfium_edit!(0, (page_object, mark), {
+            crate::bindgen::FPDFPageObj_AddExistingMark(page_object, mark)
+        })
     }
 
     #[inline]
@@ -4527,7 +4619,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         page_object: FPDF_PAGEOBJECT,
         mark: FPDF_PAGEOBJECTMARK,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFPageObj_RemoveMark(page_object, mark)
+        pdfium_edit!(0, (page_object, mark), {
+            crate::bindgen::FPDFPageObj_RemoveMark(page_object, mark)
+        })
     }
 
     #[cfg(any(
@@ -4845,15 +4939,17 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: c_int,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (document, page_object, mark, key, value), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_SetIntParam(
-            document,
-            page_object,
-            mark,
-            c_key.as_ptr(),
-            value,
-        )
+            crate::bindgen::FPDFPageObjMark_SetIntParam(
+                document,
+                page_object,
+                mark,
+                c_key.as_ptr(),
+                value,
+            )
+        })
     }
 
     #[cfg(any(
@@ -4873,15 +4969,17 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: c_float,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (document, page_object, mark, key, value), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_SetFloatParam(
-            document,
-            page_object,
-            mark,
-            c_key.as_ptr(),
-            value,
-        )
+            crate::bindgen::FPDFPageObjMark_SetFloatParam(
+                document,
+                page_object,
+                mark,
+                c_key.as_ptr(),
+                value,
+            )
+        })
     }
 
     #[inline]
@@ -4894,17 +4992,19 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: &str,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (document, page_object, mark, key, value), {
+            let c_key = CString::new(key).unwrap();
 
-        let c_value = CString::new(value).unwrap();
+            let c_value = CString::new(value).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_SetStringParam(
-            document,
-            page_object,
-            mark,
-            c_key.as_ptr(),
-            c_value.as_ptr(),
-        )
+            crate::bindgen::FPDFPageObjMark_SetStringParam(
+                document,
+                page_object,
+                mark,
+                c_key.as_ptr(),
+                c_value.as_ptr(),
+            )
+        })
     }
 
     #[cfg(any(
@@ -4929,16 +5029,18 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         value: *const c_uchar,
         value_len: c_ulong,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (document, page_object, mark, key, value, value_len), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_SetBlobParam(
-            document,
-            page_object,
-            mark,
-            c_key.as_ptr(),
-            value,
-            value_len,
-        )
+            crate::bindgen::FPDFPageObjMark_SetBlobParam(
+                document,
+                page_object,
+                mark,
+                c_key.as_ptr(),
+                value,
+                value_len,
+            )
+        })
     }
 
     #[cfg(any(
@@ -4971,16 +5073,18 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         value: *mut c_void,
         value_len: c_ulong,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (document, page_object, mark, key, value, value_len), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_SetBlobParam(
-            document,
-            page_object,
-            mark,
-            c_key.as_ptr(),
-            value,
-            value_len,
-        )
+            crate::bindgen::FPDFPageObjMark_SetBlobParam(
+                document,
+                page_object,
+                mark,
+                c_key.as_ptr(),
+                value,
+                value_len,
+            )
+        })
     }
 
     #[inline]
@@ -4991,9 +5095,11 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         mark: FPDF_PAGEOBJECTMARK,
         key: &str,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (page_object, mark, key), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFPageObjMark_RemoveParam(page_object, mark, c_key.as_ptr())
+            crate::bindgen::FPDFPageObjMark_RemoveParam(page_object, mark, c_key.as_ptr())
+        })
     }
 
     #[inline]
@@ -5005,7 +5111,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         image_object: FPDF_PAGEOBJECT,
         file_access: *mut FPDF_FILEACCESS,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFImageObj_LoadJpegFile(pages, count, image_object, file_access)
+        pdfium_edit!(0, (pages, count, image_object, file_access), {
+            crate::bindgen::FPDFImageObj_LoadJpegFile(pages, count, image_object, file_access)
+        })
     }
 
     #[inline]
@@ -5017,7 +5125,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         image_object: FPDF_PAGEOBJECT,
         file_access: *mut FPDF_FILEACCESS,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFImageObj_LoadJpegFileInline(pages, count, image_object, file_access)
+        pdfium_edit!(0, (pages, count, image_object, file_access), {
+            crate::bindgen::FPDFImageObj_LoadJpegFileInline(pages, count, image_object, file_access)
+        })
     }
 
     #[inline]
@@ -5032,7 +5142,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         e: c_double,
         f: c_double,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFImageObj_SetMatrix(image_object, a, b, c, d, e, f)
+        pdfium_edit!(0, (image_object, a, b, c, d, e, f), {
+            crate::bindgen::FPDFImageObj_SetMatrix(image_object, a, b, c, d, e, f)
+        })
     }
 
     #[inline]
@@ -5044,7 +5156,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         image_object: FPDF_PAGEOBJECT,
         bitmap: FPDF_BITMAP,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFImageObj_SetBitmap(pages, count, image_object, bitmap)
+        pdfium_edit!(0, (pages, count, image_object, bitmap), {
+            crate::bindgen::FPDFImageObj_SetBitmap(pages, count, image_object, bitmap)
+        })
     }
 
     #[inline]
@@ -5159,7 +5273,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFPageObj_CreateNewPath(&self, x: c_float, y: c_float) -> FPDF_PAGEOBJECT {
-        crate::bindgen::FPDFPageObj_CreateNewPath(x, y)
+        pdfium_edit!(std::ptr::null_mut(), (x, y), {
+            crate::bindgen::FPDFPageObj_CreateNewPath(x, y)
+        })
     }
 
     #[inline]
@@ -5171,7 +5287,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         w: c_float,
         h: c_float,
     ) -> FPDF_PAGEOBJECT {
-        crate::bindgen::FPDFPageObj_CreateNewRect(x, y, w, h)
+        pdfium_edit!(std::ptr::null_mut(), (x, y, w, h), {
+            crate::bindgen::FPDFPageObj_CreateNewRect(x, y, w, h)
+        })
     }
 
     #[inline]
@@ -5697,7 +5815,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         document: FPDF_DOCUMENT,
         name: FPDF_WIDESTRING,
     ) -> FPDF_ATTACHMENT {
-        crate::bindgen::FPDFDoc_AddAttachment(document, name)
+        pdfium_edit!(std::ptr::null_mut(), (document, name), {
+            crate::bindgen::FPDFDoc_AddAttachment(document, name)
+        })
     }
 
     #[inline]
@@ -5713,7 +5833,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
     #[inline]
     #[allow(non_snake_case)]
     unsafe fn FPDFDoc_DeleteAttachment(&self, document: FPDF_DOCUMENT, index: c_int) -> FPDF_BOOL {
-        crate::bindgen::FPDFDoc_DeleteAttachment(document, index)
+        pdfium_edit!(0, (document, index), {
+            crate::bindgen::FPDFDoc_DeleteAttachment(document, index)
+        })
     }
 
     #[inline]
@@ -5755,9 +5877,11 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         key: &str,
         value: FPDF_WIDESTRING,
     ) -> FPDF_BOOL {
-        let c_key = CString::new(key).unwrap();
+        pdfium_edit!(0, (attachment, key, value), {
+            let c_key = CString::new(key).unwrap();
 
-        crate::bindgen::FPDFAttachment_SetStringValue(attachment, c_key.as_ptr(), value)
+            crate::bindgen::FPDFAttachment_SetStringValue(attachment, c_key.as_ptr(), value)
+        })
     }
 
     #[inline]
@@ -5782,7 +5906,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         attachment: FPDF_ATTACHMENT,
         value: FPDF_WIDESTRING,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFAttachment_SetDescription(attachment, value)
+        pdfium_edit!(0, (attachment, value), {
+            crate::bindgen::FPDFAttachment_SetDescription(attachment, value)
+        })
     }
 
     #[cfg(any(feature = "pdfium_future", feature = "pdfium_8125"))]
@@ -5806,7 +5932,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         contents: *const c_void,
         len: c_ulong,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFAttachment_SetFile(attachment, document, contents, len)
+        pdfium_edit!(0, (attachment, document, contents, len), {
+            crate::bindgen::FPDFAttachment_SetFile(attachment, document, contents, len)
+        })
     }
 
     #[inline]
@@ -5888,7 +6016,9 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         document: FPDF_DOCUMENT,
         language: FPDF_WIDESTRING,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFCatalog_SetLanguage(document, language)
+        pdfium_edit!(0, (document, language), {
+            crate::bindgen::FPDFCatalog_SetLanguage(document, language)
+        })
     }
 
     #[cfg(any(
@@ -5907,6 +6037,8 @@ impl PdfiumLibraryBindings for StaticPdfiumBindings {
         document: FPDF_DOCUMENT,
         language: FPDF_BYTESTRING,
     ) -> FPDF_BOOL {
-        crate::bindgen::FPDFCatalog_SetLanguage(document, language)
+        pdfium_edit!(0, (document, language), {
+            crate::bindgen::FPDFCatalog_SetLanguage(document, language)
+        })
     }
 }
