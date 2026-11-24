@@ -24,9 +24,9 @@ bitflags = "2"
 bytes = "1"
 bytemuck = "1"
 chrono = "0"
-image_025 = { package = "image", version = "0.25", optional = true, default-features = false, features = ["jpeg"]}
-image_024 = { package = "image", version = "0.24", optional = true, default-features = false, features = ["jpeg"]}
-image_023 = { package = "image", version = "0.23", optional = true, default-features = false, features = ["jpeg"]}
+image_025 = { package = "image", version = "0.25", optional = true, default-features = false}
+image_024 = { package = "image", version = "0.24", optional = true, default-features = false}
+image_023 = { package = "image", version = "0.23", optional = true, default-features = false}
 itertools = "0"
 log = "0"
 maybe-owned = "0"
@@ -66,7 +66,7 @@ axum = "0"                                     # Used by examples/axum_once_cell
 tokio = { version = "1", features = ["full"] } # Used by examples/axum_once_cell.rs
 tower = "0"                                    # Used by examples/axum_once_cell.rs
 ttf-parser = "0"                               # Used by examples/shaped_text.rs
-pdfium-render = { path = "./", default-features = false, features = ["thread_safe"] } # thread_safe feature required by examples/axum_once_cell.rs
+pdfium-render = { path = "./", default-features = false, features = ["thread_safe", "image_jpeg"] } # JPEG output and thread safety for examples and tests
 
 [features]
 default = ["pdfium_latest", "image_latest", "thread_safe"]
@@ -88,6 +88,7 @@ image_latest = ["image_025"]
 image_025 = ["dep:image_025", "image_api"]
 image_024 = ["dep:image_024", "image_api"]
 image_023 = ["dep:image_023", "image_api"]
+image_jpeg = ["image_025?/jpeg", "image_024?/jpeg", "image_023?/jpeg"]
 image_api = [] # A feature shared by all image versions, indicating that image-based APIs
 # should be made available to callers
 

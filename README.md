@@ -234,6 +234,7 @@ Release 0.8.26 introduced new features to explicitly control the version of the 
 * `image_025`: uses `image` crate version `0.25`.
 * `image_024`: uses `image` crate version `0.24`.
 * `image_023`: uses `image` crate version `0.23`.
+* `image_jpeg`: enables JPEG codecs for the selected `image` version. The image adapter works with decoded pixel buffers, so codec support is optional.
 
 Projects that do not require page or page object rendering can disable these features to avoid compiling the `image` crate into their binaries.
 
