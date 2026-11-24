@@ -153,6 +153,7 @@ pub(crate) mod pixels {
     }
 }
 
+#[cfg(any(test, not(feature = "render_only")))]
 pub(crate) mod dates {
     use chrono::prelude::*;
     use std::fmt::Display;

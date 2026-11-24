@@ -139,8 +139,9 @@ disables PDF saves, page imports and moves, page flattening and geometry
 edits, annotation mutations, attachment and catalog language writes, image
 and path object editing, interactive form editing, and page-content
 regeneration. Disabled operations return their normal failure values, or
-do nothing for void PDFium calls. Rendering and existing annotation and
-form appearances remain available. For temporary text pages, set the
+do nothing for void PDFium calls. Annotation and form writes also skip
+creating and formatting timestamps. Rendering and existing annotation
+and form appearances remain available. For temporary text pages, set the
 page's content regeneration strategy to `Manual` before adding text
 objects and render the open page directly.
 

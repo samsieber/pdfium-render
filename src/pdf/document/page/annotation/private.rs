@@ -24,6 +24,7 @@ pub(crate) mod internal {
     use crate::pdf::points::PdfPoints;
     use crate::pdf::rect::PdfRect;
     use crate::pdfium::PdfiumLibraryBindingsAccessor;
+    #[cfg(not(feature = "render_only"))]
     use crate::utils::dates::date_time_to_pdf_string;
     use crate::utils::mem::create_byte_buffer;
     use crate::utils::utf16le::get_string_from_pdfium_utf16le_bytes;
@@ -205,29 +206,39 @@ pub(crate) mod internal {
         /// Sets the string value associated with the given key in the annotation dictionary
         /// of this [PdfPageAnnotation].
         fn set_string_value(&mut self, key: &str, value: &str) -> Result<(), PdfiumError> {
-            // Attempt to update the modification date first, before we apply the given value update.
-            // That way, if updating the date fails, we can fail early.
-
-            #[allow(clippy::collapsible_if)] // Prefer to keep the intent clear
-            if key != "M"
-            // Don't update the modification date if the key we have been given to update
-            // is itself the modification date!
+            #[cfg(feature = "render_only")]
             {
-                self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))?;
-            }
-
-            // With the modification date updated, we can now update the key and value
-            // we were given.
-
-            if self.bindings().is_true(unsafe {
-                self.bindings()
-                    .FPDFAnnot_SetStringValue_str(self.handle(), key, value)
-            }) {
-                Ok(())
-            } else {
+                let _ = (key, value);
                 Err(PdfiumError::PdfiumLibraryInternalError(
                     PdfiumInternalError::Unknown,
                 ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                // Attempt to update the modification date first, before we apply the given value update.
+                // That way, if updating the date fails, we can fail early.
+
+                #[allow(clippy::collapsible_if)] // Prefer to keep the intent clear
+                if key != "M"
+                // Don't update the modification date if the key we have been given to update
+                // is itself the modification date!
+                {
+                    self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))?;
+                }
+
+                // With the modification date updated, we can now update the key and value
+                // we were given.
+
+                if self.bindings().is_true(unsafe {
+                    self.bindings()
+                        .FPDFAnnot_SetStringValue_str(self.handle(), key, value)
+                }) {
+                    Ok(())
+                } else {
+                    Err(PdfiumError::PdfiumLibraryInternalError(
+                        PdfiumInternalError::Unknown,
+                    ))
+                }
             }
         }
 
@@ -255,15 +266,25 @@ pub(crate) mod internal {
         /// Internal implementation of [PdfPageAnnotationCommon::set_bounds()].
         #[inline]
         fn set_bounds_impl(&mut self, bounds: PdfRect) -> Result<(), PdfiumError> {
-            if self.bindings().is_true(unsafe {
-                self.bindings()
-                    .FPDFAnnot_SetRect(self.handle(), &bounds.as_pdfium())
-            }) {
-                self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))
-            } else {
+            #[cfg(feature = "render_only")]
+            {
+                let _ = bounds;
                 Err(PdfiumError::PdfiumLibraryInternalError(
                     PdfiumInternalError::Unknown,
                 ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                if self.bindings().is_true(unsafe {
+                    self.bindings()
+                        .FPDFAnnot_SetRect(self.handle(), &bounds.as_pdfium())
+                }) {
+                    self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))
+                } else {
+                    Err(PdfiumError::PdfiumLibraryInternalError(
+                        PdfiumInternalError::Unknown,
+                    ))
+                }
             }
         }
 
@@ -345,7 +366,17 @@ pub(crate) mod internal {
         /// Internal implementation of [PdfPageAnnotationCommon::set_creation_date()].
         #[inline]
         fn set_creation_date_impl(&mut self, date: DateTime<Utc>) -> Result<(), PdfiumError> {
-            self.set_string_value("CreationDate", &date_time_to_pdf_string(date))
+            #[cfg(feature = "render_only")]
+            {
+                let _ = date;
+                Err(PdfiumError::PdfiumLibraryInternalError(
+                    PdfiumInternalError::Unknown,
+                ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                self.set_string_value("CreationDate", &date_time_to_pdf_string(date))
+            }
         }
 
         /// Internal implementation of [PdfPageAnnotationCommon::modification_date()].
@@ -357,7 +388,17 @@ pub(crate) mod internal {
         /// Internal implementation of [PdfPageAnnotationCommon::set_modification_date()].
         #[inline]
         fn set_modification_date_impl(&mut self, date: DateTime<Utc>) -> Result<(), PdfiumError> {
-            self.set_string_value("M", &date_time_to_pdf_string(date))
+            #[cfg(feature = "render_only")]
+            {
+                let _ = date;
+                Err(PdfiumError::PdfiumLibraryInternalError(
+                    PdfiumInternalError::Unknown,
+                ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                self.set_string_value("M", &date_time_to_pdf_string(date))
+            }
         }
 
         /// Internal implementation of [PdfPageAnnotationCommon::is_markup_annotation()].

@@ -18,10 +18,12 @@ pub(crate) mod internal {
     use crate::pdf::appearance_mode::PdfAppearanceMode;
     use crate::pdf::document::page::field::PdfFormFieldCommon;
     use crate::pdfium::PdfiumLibraryBindingsAccessor;
+    #[cfg(not(feature = "render_only"))]
     use crate::utils::dates::date_time_to_pdf_string;
     use crate::utils::mem::create_byte_buffer;
     use crate::utils::utf16le::get_string_from_pdfium_utf16le_bytes;
     use bitflags::bitflags;
+    #[cfg(not(feature = "render_only"))]
     use chrono::Utc;
 
     #[cfg(any(
@@ -272,23 +274,33 @@ pub(crate) mod internal {
         /// field widgets such as text fields. Not exposed directly by [PdfFormFieldCommon].
         #[inline]
         fn set_value_impl(&mut self, value: &str) -> Result<(), PdfiumError> {
-            self.bindings()
-                .to_result(unsafe {
-                    self.bindings().FPDFAnnot_SetStringValue_str(
-                        self.annotation_handle(),
-                        "M",
-                        &date_time_to_pdf_string(Utc::now()),
-                    )
-                })
-                .and_then(|_| {
-                    self.bindings().to_result(unsafe {
+            #[cfg(feature = "render_only")]
+            {
+                let _ = value;
+                Err(PdfiumError::PdfiumLibraryInternalError(
+                    PdfiumInternalError::Unknown,
+                ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                self.bindings()
+                    .to_result(unsafe {
                         self.bindings().FPDFAnnot_SetStringValue_str(
                             self.annotation_handle(),
-                            "V",
-                            value,
+                            "M",
+                            &date_time_to_pdf_string(Utc::now()),
                         )
                     })
-                })
+                    .and_then(|_| {
+                        self.bindings().to_result(unsafe {
+                            self.bindings().FPDFAnnot_SetStringValue_str(
+                                self.annotation_handle(),
+                                "V",
+                                value,
+                            )
+                        })
+                    })
+            }
         }
 
         /// Internal implementation of `export_value()` function shared by on/off form field widgets
@@ -432,29 +444,42 @@ pub(crate) mod internal {
         /// Sets the string value associated with the given key in the annotation dictionary
         /// of the [PdfPageAnnotation] containing this [PdfFormField].
         fn set_string_value(&mut self, key: &str, value: &str) -> Result<(), PdfiumError> {
-            // Attempt to update the modification date first, before we apply the given value update.
-            // That way, if updating the date fails, we can fail early.
-
-            #[allow(clippy::collapsible_if)] // Prefer to keep the intent clear
-            if key != "M"
-            // Don't update the modification date if the key we have been given to update
-            // is itself the modification date!
+            #[cfg(feature = "render_only")]
             {
-                self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))?;
-            }
-
-            // With the modification date updated, we can now update the key and value
-            // we were given.
-
-            if self.bindings().is_true(unsafe {
-                self.bindings()
-                    .FPDFAnnot_SetStringValue_str(self.annotation_handle(), key, value)
-            }) {
-                Ok(())
-            } else {
+                let _ = (key, value);
                 Err(PdfiumError::PdfiumLibraryInternalError(
                     PdfiumInternalError::Unknown,
                 ))
+            }
+            #[cfg(not(feature = "render_only"))]
+            {
+                // Attempt to update the modification date first, before we apply the given value update.
+                // That way, if updating the date fails, we can fail early.
+
+                #[allow(clippy::collapsible_if)] // Prefer to keep the intent clear
+                if key != "M"
+                // Don't update the modification date if the key we have been given to update
+                // is itself the modification date!
+                {
+                    self.set_string_value("M", &date_time_to_pdf_string(Utc::now()))?;
+                }
+
+                // With the modification date updated, we can now update the key and value
+                // we were given.
+
+                if self.bindings().is_true(unsafe {
+                    self.bindings().FPDFAnnot_SetStringValue_str(
+                        self.annotation_handle(),
+                        key,
+                        value,
+                    )
+                }) {
+                    Ok(())
+                } else {
+                    Err(PdfiumError::PdfiumLibraryInternalError(
+                        PdfiumInternalError::Unknown,
+                    ))
+                }
             }
         }
 

@@ -23,6 +23,7 @@ use crate::pdf::document::page::object::{PdfPageObject, PdfPageObjectCommon};
 use crate::pdf::document::page::{PdfPage, PdfPageContentRegenerationStrategy, PdfPageIndexCache};
 use crate::pdf::quad_points::PdfQuadPoints;
 use crate::pdfium::PdfiumLibraryBindingsAccessor;
+#[cfg(not(feature = "render_only"))]
 use chrono::prelude::*;
 use std::marker::PhantomData;
 use std::ops::Range;
@@ -151,42 +152,53 @@ impl<'a> PdfPageAnnotations<'a> {
         annotation_type: PdfPageAnnotationType,
         constructor: fn(FPDF_DOCUMENT, FPDF_PAGE, FPDF_ANNOTATION) -> T,
     ) -> Result<T, PdfiumError> {
-        let handle = unsafe {
-            self.bindings()
-                .FPDFPage_CreateAnnot(self.page_handle(), annotation_type.as_pdfium())
-        };
-
-        if handle.is_null() {
+        #[cfg(feature = "render_only")]
+        {
+            let _ = (annotation_type, constructor);
             Err(PdfiumError::PdfiumLibraryInternalError(
                 PdfiumInternalError::Unknown,
             ))
-        } else {
-            let mut annotation = constructor(self.document_handle(), self.page_handle(), handle);
+        }
+        #[cfg(not(feature = "render_only"))]
+        {
+            let handle = unsafe {
+                self.bindings()
+                    .FPDFPage_CreateAnnot(self.page_handle(), annotation_type.as_pdfium())
+            };
 
-            annotation
-                .set_creation_date(Utc::now())
-                .and_then(|()| {
-                    if let Some(content_regeneration_strategy) =
-                        PdfPageIndexCache::get_content_regeneration_strategy_for_page(
-                            self.document_handle(),
-                            self.page_handle(),
-                        )
-                    {
-                        if content_regeneration_strategy
-                            == PdfPageContentRegenerationStrategy::AutomaticOnEveryChange
-                        {
-                            PdfPage::regenerate_content_immut_for_handle(
+            if handle.is_null() {
+                Err(PdfiumError::PdfiumLibraryInternalError(
+                    PdfiumInternalError::Unknown,
+                ))
+            } else {
+                let mut annotation =
+                    constructor(self.document_handle(), self.page_handle(), handle);
+
+                annotation
+                    .set_creation_date(Utc::now())
+                    .and_then(|()| {
+                        if let Some(content_regeneration_strategy) =
+                            PdfPageIndexCache::get_content_regeneration_strategy_for_page(
+                                self.document_handle(),
                                 self.page_handle(),
-                                self.bindings(),
                             )
+                        {
+                            if content_regeneration_strategy
+                                == PdfPageContentRegenerationStrategy::AutomaticOnEveryChange
+                            {
+                                PdfPage::regenerate_content_immut_for_handle(
+                                    self.page_handle(),
+                                    self.bindings(),
+                                )
+                            } else {
+                                Ok(())
+                            }
                         } else {
-                            Ok(())
+                            Err(PdfiumError::SourcePageIndexNotInCache)
                         }
-                    } else {
-                        Err(PdfiumError::SourcePageIndexNotInCache)
-                    }
-                })
-                .map(|()| annotation)
+                    })
+                    .map(|()| annotation)
+            }
         }
     }
 
